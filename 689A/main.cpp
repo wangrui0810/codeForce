@@ -23,7 +23,6 @@ vector<Distance> intTodis(vector<int> &d)
 		dis.y = numToXY[d[i]][1] - numToXY[d[i+1]][1];
 		path.push_back(dis);
 	}
-	d.clear();
 	return path;
 }
 
@@ -60,15 +59,8 @@ int main()
 	}
 
 	//将手机的摁键存在了map中
-	map<int, vector<int>>::const_iterator iter;
-	for (iter = numToXY.begin(); iter != numToXY.end(); iter++)
-	{
-		cout << iter->first << "~";
-		cout << (iter->second)[0] << " " << (iter->second)[1] << endl;
-	}
 	//需要一个vector<Distance>用来存储变化的步数
 	vector<int> steps;
-
 	while(cin >> a)
 	{
 		cin >> pathStr;
@@ -77,35 +69,41 @@ int main()
 		{
 			steps.push_back(mystr[i] - '0');
 		}
-
-		DisVec.assign(intTodis(steps).begin(), intTodis(steps).end());  
+		vector<Distance> Vtmp = intTodis(steps);
+		DisVec.assign(Vtmp.begin(), Vtmp.end());  
 		//下一步就是遍历10个数字 看是否有满足此坐标变化的
-		int flag = 1;
+		
 		map<int, vector<int>>::iterator p_iter;
+		int flag = 1;
 		for(p_iter = numToXY.begin(); p_iter != numToXY.end(); p_iter++)
 		{
+			if((*p_iter).first == steps[0])
+				continue;
 			int px = (*p_iter).second[0];
 			int py = (*p_iter).second[1];
 			int i = 0;
 			int length = DisVec.size();
-			while(i <= length)
+			while(i < length)
 			{
 				px -= DisVec[i].x;
 				py -= DisVec[i].y;
-				if(phoneNum[px][py] > 9)
+				if(phoneNum[px][py] > 9||px < 0||py < 0)
 				{
-					flag = 0;
 					break;
 				}
 				i++;
 			}
-			if(flag == 1)
+			if(i == length)
 			{
-				cout << "True" << endl;
+				flag = 0;
+				cout <<"NO" << endl;
 				break;
-		 	}
-		}	
-		cout << "False";
+			}
+		}
+		if(flag == 1)
+			cout << "YES" << endl;
+		DisVec.clear();
+		steps.clear();
 	}
 	return 0;
 }
